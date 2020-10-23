@@ -24,6 +24,7 @@ class users extends GeneralModel
         $record->regions_id =isset($params['regions_id'])?$params['regions_id']: $record->regions_id;
         // $record->isAndroid =isset($params['isAndroid'])?$params['isAndroid']: $record->isAndroid;
         $record->fireBaseToken =isset($params['fireBaseToken'])?$params['fireBaseToken']: $record->fireBaseToken;
+        $record->device_id =isset($params['device_id'])?$params['device_id']: $record->device_id;
         // $record->password = isset($params['password'])?helper::HashPassword( $params['password']): $record->password;
         $record->image =isset($params['image'])?helper::base64_image( $params['image'],'users'): $record->image;
         $record->api_token = isset($params['id'])?$record->api_token: helper::UniqueRandomXChar(69,'api_token');

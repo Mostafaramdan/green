@@ -12,10 +12,11 @@ class loginRules extends index
     public static function rules (){
         
         $rules=[
-            "phone"    =>"required|numeric|between:10000000,999999999999999",
-            "fireBaseToken"  =>"required",
-            "countryId" =>"required|exists:regions,id",
+            "phone"    =>"required_if:apiToken,|numeric|between:10000000,999999999999999",
+            "fireBaseToken"  =>"required_if:apiToken,",
+            "cityId" =>"required_if:apiToken,|exists:regions,id",
             "lang"     =>"in:ar,en",
+            'apiToken' => 'exists:users,api_token'
         ];
 
         $messages=[
@@ -24,14 +25,16 @@ class loginRules extends index
             "type.required"      =>400,
             "type.in"            =>405,
 
-            "phone.required"     =>400,
+            "phone.required_if"     =>400,
             "phone.numeric"      =>405,
             "phone.between"      =>405,
 
-            "countryId.required"  =>400,
-            "countryId.exists"    =>405,
+            "cityId.required_if"  =>400,
+            "cityId.exists"    =>405,
 
-            "fireBaseToken.required" =>400,
+            "fireBaseToken.required_if" =>400,
+
+            'apiToken.exists' => 405
         ];
 
         $messagesAr=[   
@@ -42,10 +45,12 @@ class loginRules extends index
             "phone.numeric"     =>"يجب ادخال رقم التليفون بشكل صحيح",
             "phone.between"     =>"يجب ان لا يقل رقم التليفون عن 11 ارقام ولا يزيد عن 15 رقم ",
 
-            "countryId.required"  =>"يجب إدخال رقم الدولة",
-            "countryId.exists"    =>"رقم الدولة غير موجود",
+            "cityId.required_if"  =>"يجب إدخال رقم الدولة",
+            "cityId.exists"    =>"رقم الدولة غير موجود",
 
-            "fireBaseToken.required"=>"يجب ادخال الرقم الخاص بالجهاز ",
+            "fireBaseToken.required_if"=>"يجب ادخال الرقم الخاص بالجهاز ",
+
+            "apiToken.exists"=>"توكن زائر غير موجود ",
         ];
 
         $messagesEn=[

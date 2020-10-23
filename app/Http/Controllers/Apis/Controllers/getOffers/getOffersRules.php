@@ -13,15 +13,17 @@ class getOffersRules extends index
         
         $rules=[
             "apiToken"   =>"required|exists:users,api_token",
-            "page"      =>"required|numeric"
+            "page"      =>"required|numeric",
+            "categoryId"   =>"required|exists:categories,id",
+
         ];
 
         $messages=[
             "apiToken.required"     =>400,
             "apiToken.exists"       =>405,
 
-            "userId.required"       =>400,
-            "userId.exists"         =>405,
+            "categoryId.required"       =>400,
+            "categoryId.exists"         =>405,
 
             "page.required"         =>400,
             "page.numeric"          =>405
@@ -31,8 +33,8 @@ class getOffersRules extends index
             "apiToken.required"     =>"يجب ادخال التوكن",
             "apiToken.exists"       =>"هذا التوكن غير موجود",
 
-            "userId.exists"         =>"هذا الشخص غير موجود",
-            "userId.required"       =>"يجب ادخال رقم الشخص",
+            "categoryId.exists"         =>"هذا القسم غير موجود",
+            "categoryId.required"       =>"يجب ادخال رقم القسم",
 
             "page.required"         =>"يجب ادخال رقم الصفحة",
             "page.numeric"          =>"يجب ادخال رقم الصفحة بشكل صحيح",

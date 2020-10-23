@@ -31,26 +31,34 @@ class addToCartController extends index
                      ->where('users_id',self::$account->id)
                      ->where('orders_id',null)
                      ->first();
+        if($cart->quantity + self::$request->quantity < 1){
+            return [
+                'status'=>405,
+                "message"=> "you can't do this becuase quantity now = 0"
+            ];
+        }
         if($cart){
             carts::createUpdate([
                 'id'=>$cart->id,
                 'quantity'=> self::$request->quantity + $cart->quantity,
-                'price' => $product->priceWithS_ar,
+                'price' => $product->finalPrice,
+                'currency' => self::$request->currency,
                 'offers_id'=>$product->offer->id??null,
                 'isShipment'=>$product->isShipment,
                 'discountPercentage'=>$product->discount,
             ]);
-            if($product->priceWithS_ar != $cart->price ){
+            if($product->price != $cart->price ){
                 return [
                     'status'=>201,
-                    'currentPrice'=>$product->priceWithS_ar
+                    'currentPrice'=>$product->price
                 ];
             }
         }else{
             carts::createUpdate([
                 'users_id'=>self::$account->id,
                 'quantity'=> self::$request->quantity,
-                'price' => $product->priceWithS_ar,
+                'price' => $product->finalPrice,
+                'currency' => self::$request->currency,
                 'offers_id'=>$product->offer->id??null,
                 'isShipment'=>$product->isShipment,
                 'discountPercentage'=>$product->discount,

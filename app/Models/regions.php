@@ -23,7 +23,7 @@ class regions extends GeneralModel
     }
 
     public function regions(){   
-        return $this->hasMany('\App\Models\regions','regions_id') ;
+        return $this->hasMany('\App\Models\regions','regions_id')->sortBy('id') ;
     }
     public function region(){   
         return $this->belongsTo('\App\Models\regions','regions_id') ;

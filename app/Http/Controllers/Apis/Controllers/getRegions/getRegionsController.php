@@ -11,11 +11,11 @@ class getRegionsController extends index
 {
     public static function api(){
 
-        $records=  regions::allActive()->where('regions_id',null);
+        $records=  regions::allActive()->where('regions_id',null)->sortBy('id');
         return [
             'status'=>$records->count()?200:204,
             'totalPages'=>ceil($records->count()/self::$itemPerPage),
-            'regions'=>objects::ArrayOfObjects($records,'region'),
+            'countries'=>objects::ArrayOfObjects($records,'region'),
         ];
     }
 }

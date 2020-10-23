@@ -6,6 +6,8 @@ use  App\Http\Controllers\Apis\Controllers\index;
 use App\Http\Controllers\Controller;
 use App\Models\phones;
 use App\Models\emails;
+use App\Models\products;
+use App\Models\carts;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -19,9 +21,22 @@ class objects extends index{
         $object['id']=$record->id;
         $object['name']=$record['name_'.self::$lang];
         $object['currency']=$record->currency;
+        $object['stateKey']=$record->stateKey;
         $object['deliveryPrice']=$record->deliveryPrice;
         $record->logo==null?:$object['logo'] =Request()->root().$record->logo;   
-        count($record->regions) > 0? $object['cities']=self::ArrayOfObjects($record->regions,'city'):null;
+        count($record->regions) > 0? $object['cities']=self::ArrayOfObjects($record->regions->sortBy('id'),'city'):null;
+        return $object;
+    }  
+    public static function country ($record)
+    {
+        if($record == null  ) {return null;} 
+        $object = [];
+        $object['id']=$record->id;
+        $object['name']=$record['name_'.self::$lang];
+        $object['currency']=$record->currency;
+        $object['stateKey']=$record->stateKey;
+        $object['deliveryPrice']=$record->deliveryPrice;
+        $record->logo==null?:$object['logo'] =Request()->root().$record->logo;   
         return $object;
     }  
 
@@ -31,6 +46,7 @@ class objects extends index{
         $object = [];
         $object['id']=$record->id;
         $object['name']=$record['name_'.self::$lang];
+        $record->serial?$object['serial']=$record->serial:null;
         $record->deliveryPrice?$object['deliveryPrice']=$record->deliveryPrice:null;
         $record->logo==null?:$object['logo'] =Request()->root().$record->logo;   
         return $object;
@@ -65,9 +81,11 @@ class objects extends index{
         isset($record['description_'.self::$lang]) ? $object['description']=$record['description_'.self::$lang] : null;
         isset($record['name_'.self::$lang]) ? $object['name']=$record['name_'.self::$lang] : null;
         $object['images']=$record->images->pluck('image_url')->toArray();
-        $object['price'] = $record->priceWithS_ar;
+        $record->mainImage==null?$object['mainImage'] = Request()->root().'/default.png':$object['mainImage'] =Request()->root().$record->mainImage;   
+        $object['price'] = $record->price;
+        $object['serial'] = $record->serial;
         $record->discount ? $object['discount'] = $record->discount: null ;
-        $record->discount ? $object['newPrice'] = $record->priceWithS_ar - ($record->discount/100 *$record->priceWithS_ar) : null ;
+        $record->discount ? $object['newPrice'] = $record->price - ($record->discount/100 *$record->price) : null ;
         $object['quantity'] = $record->quantity;
         $object['isShipment'] = $record->isShipment? true : false;
         return $object;
@@ -94,7 +112,8 @@ class objects extends index{
         $record->image?$object['image'] =Request()->root().$record->image:null;   
         $object['email'] = $record->email;
         $object['lang'] = $record->lang;
-        $object['country'] = self::city($record->region);
+        $object['city'] = self::city($record->region);
+        $object['country'] = self::country($record->region->region);
         return $object;
     } 
 
@@ -106,6 +125,7 @@ class objects extends index{
         $object['product']=self::product($record->product);
         $object['quantity']=$record->quantity;
         $object['price']=$record->price;
+        $object['currency']=$record->currency;
         $object['discount']=$record->discount;
         $record->discount ? $object['newPrice'] = $record->price - ($record->discount/100 *$record->price) : null ;
         $object['isShipment'] = $record->isShipment? true : false;
@@ -118,6 +138,7 @@ class objects extends index{
     {
         if($record == null  ) {return null;} 
         $object = [];
+        $object['id']=$record->id;
         $object['location']= self::location($record->location);
         $object['isVoucher'] = $record->vouchers_id? true : false;
         $object['percentageDiscount'] =  $record->vouchers_id ? $record->voucher->discountPercentage : null ;
@@ -127,6 +148,11 @@ class objects extends index{
         $record->paymentType  ? $object['paymentMethod']=$record->paymentType : null  ;
         $record->notes ? $object['note']=$record->notes : null ;
         $record->deliveryPrice ? $object['deliveryPrice']=$record->deliveryPrice : null ;
+        $object['productsPrice']=$record->carts->sum('product_price');
+        $object['totalPrice']=$record->carts->sum('product_price') + $record->deliveryPrice;
+        $object['status']=helper::translateStatus($record->status);
+        $object['carts']=self::ArrayOfObjects($record->carts,'cart');
+
         return $object;
 
     }   
@@ -186,6 +212,16 @@ class objects extends index{
         $object['email'] = $record->email;
         $object['phone'] = $record->phone;
         $object['daysToDelivery'] = $record->daysToDelivery;
+        return $object;
+    }
+    public static function voucher ($record)
+    {
+        
+        if($record == null) {return null;}
+        $object = [];
+        $object['id'] = $record->id;
+        $object['discount'] = $record->discountPercentage;
+        $object['maximumDeduction'] = $record->maximumDeduction;
         return $object;
     }
 

@@ -17,9 +17,9 @@ class getOrdersController extends index
         $records=  orders::where(self::$account->getTable()."_id",self::$account->id)->get();
         if(self::$request->has('status')){
             if(self::$request->status == 'current'){
-                $records=$records->where('status','waiting');
+                $records=$records->whereIn('status',['waiting','accepted','onProgress']);
             }else{
-                $records=$records->where('status','!=','waiting');
+                $records=$records->where('status','delivered');
             }
         }
         return [

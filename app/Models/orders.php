@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 class orders extends GeneralModel
 {
-    protected $table = 'orders';
+    protected $table = 'orders',$appends=['status_ar','status_en'];
 
     public static function createUpdate($params){
 

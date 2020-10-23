@@ -14,6 +14,13 @@ class loginController extends index
 {
     public static function api()
     {
+        if(self::$request->apiToken){
+            return [
+                'status'=>200,
+                'apiToken'=>self::$request->apiToken,
+
+            ];
+        }
         if(self::$account){
             if(!self::$account->is_active){
                 return [
@@ -35,7 +42,7 @@ class loginController extends index
             $user = users::createUpdate([
                 'fireBaseToken'=>self::$request->fireBaseToken,
                 'phone'=>self::$request->phone,
-                'regions_id'=>self::$request->countryId,
+                'regions_id'=>self::$request->cityId,
                 'lang'=>self::$request->lang,
             ]);
             $session =  sessions::createUpdate([

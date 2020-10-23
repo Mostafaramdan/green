@@ -12,7 +12,7 @@ class getTimeOfDeliveryController extends index
 {
     public static function api()
     {
-        $records=  delivery_time::allActive();
+        $records=  delivery_time::allActive()->sortBy('id');
         return [
             "status"=>$records->forPage(self::$request->page+1,self::$itemPerPage)->count()?200:204,
             "totalPages"=>ceil($records->count()/self::$itemPerPage),

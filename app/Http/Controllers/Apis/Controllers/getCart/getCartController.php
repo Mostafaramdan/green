@@ -18,6 +18,8 @@ class getCartController extends index
         return [
             "status"=>$records->forPage(self::$request->page+1,self::$itemPerPage)->count()?200:204,
             "totalPages"=>ceil($records->count()/self::$itemPerPage),
+            "totalCarts"=>$records->sum('product_price') ,
+            "deliveryPrice"=> self::$account->region->deliveryPrice,
             "carts"=>objects::ArrayOfObjects($records->forPage(self::$request->page+1,self::$itemPerPage),"cart"),
         ];
     }

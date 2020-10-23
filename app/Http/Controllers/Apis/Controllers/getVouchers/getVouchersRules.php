@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Apis\Controllers\addToCart;
+namespace App\Http\Controllers\Apis\Controllers\getVouchers;
 
 use App\Http\Controllers\Apis\Controllers\index;
 use App\Http\Controllers\Apis\Resources\objects;
@@ -8,37 +8,31 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Apis\Helper\helper;
 
-class addToCartRules extends index
+class getVouchersRules extends index
 {
     public static function rules (){
         
         $rules=[
-            "apiToken"    =>"required|exists:users,api_token",
-            "productId"   =>"required|exists:products,id",
-            "quantity"    =>"required|numeric"
+            "apiToken"   =>"required|exists:users,api_token",
+            "code"     =>"required|exists:vouchers,code",
         ];
 
         $messages=[
             "apiToken.required"     =>400,
             "apiToken.exists"       =>405,
 
-            "productId.required"       =>400,
-            "productId.exists"         =>405,
+            "code.required"       =>400,
+            "code.exists"         =>415,
 
-            "quantity.required"         =>400,
-            "quantity.numeric"          =>405
         ];
 
         $messagesAr=[   
             "apiToken.required"     =>"يجب ادخال التوكن",
             "apiToken.exists"       =>"هذا التوكن غير موجود",
 
-            "productId.exists"      =>"هذا المنتج غير موجود",
-            "productId.required"    =>"يجب ادخال رقم المنتج",
+            "code.exists"         =>"هذا الكود غير موجود",
+            "code.required"       =>"يجب ادخال الكود ",
 
-            "quantity.required"     =>"يجب ادخال الكمية ",
-            "quantity.numeric"      =>"يجب ادخال  الكمية بشكل صحيح",
-            "quantity.min"          =>"يجب ادخال  الكمية بشكل صحيح",
         ];
 
         $messagesEn=[

@@ -25,15 +25,16 @@ class updateCartController extends index
         carts::createUpdate([
             'id'=>$record->id,
             'quantity'=> self::$request->quantity ,
-            'price' => $product->priceWithS_ar,
+            'price' => $product->finalPrice,
+            'currency' => $product->currency,
             'offers_id'=>$product->offer->id??null,
             'isShipment'=>$product->isShipment,
             'discountPercentage'=>$product->discount,
         ]);
-        if($product->priceWithS_ar != $record->price ){
+        if($product->price != $record->price ){
             return [
                 'status'=>201,
-                'currentPrice'=>$product->priceWithS_ar
+                'currentPrice'=>$product->price
             ];
         }
         $records=  carts::where('users_id',self::$account->id)

@@ -21,13 +21,6 @@ Route::group(['middleware' => ['dashboard']], function ()
        route::get('users/check/{check}/{id}','users@check')->name('dashboard.users.check');
        route::get('users/getRecord/{id}','users@getRecord')->name('dashboard.users.getRecord');
 
-       route::get('providers','providers@index')->name('dashboard.providers.index');
-       route::post('providers/createUpdate','providers@createUpdate')->name('dashboard.providers.createUpdate');
-       route::post('providers','providers@indexPageing')->name('dashboard.providers.indexPageing');
-       route::get('providers/delete/{id}','providers@delete')->name('dashboard.providers.delete');
-       route::get('providers/check/{check}/{id}','providers@check')->name('dashboard.providers.check');
-       route::get('providers/getRecord/{id}','providers@getRecord')->name('dashboard.providers.getRecord');
-
        route::get('notifications','notifications@index')->name('dashboard.notifications.index');
        route::post('notifications/createUpdate','notifications@createUpdate')->name('dashboard.notifications.createUpdate');
        route::post('notifications','notifications@indexPageing')->name('dashboard.notifications.indexPageing');
@@ -69,20 +62,6 @@ Route::group(['middleware' => ['dashboard']], function ()
        route::get('orders/delete/{id}','orders@delete')->name('dashboard.orders.delete');
        route::get('orders/check/{check}/{id}','orders@check')->name('dashboard.orders.check');
        route::get('orders/getRecord/{id}','orders@getRecord')->name('dashboard.orders.getRecord');
-
-       route::get('stores','stores@index')->name('dashboard.stores.index');
-       route::post('stores/createUpdate','stores@createUpdate')->name('dashboard.stores.createUpdate');
-       route::post('stores','stores@indexPageing')->name('dashboard.stores.indexPageing');
-       route::get('stores/delete/{id}','stores@delete')->name('dashboard.stores.delete');
-       route::get('stores/check/{check}/{id}','stores@check')->name('dashboard.stores.check');
-       route::get('stores/getRecord/{id}','stores@getRecord')->name('dashboard.stores.getRecord');
-
-       route::get('services','services@index')->name('dashboard.services.index');
-       route::post('services/createUpdate','services@createUpdate')->name('dashboard.services.createUpdate');
-       route::post('services','services@indexPageing')->name('dashboard.services.indexPageing');
-       route::get('services/delete/{id}','services@delete')->name('dashboard.services.delete');
-       route::get('services/check/{check}/{id}','services@check')->name('dashboard.services.check');
-       route::get('services/getRecord/{id}','services@getRecord')->name('dashboard.services.getRecord');
 
        route::get('admins','admins@index')->name('dashboard.admins.index');
        route::post('admins/createUpdate','admins@createUpdate')->name('dashboard.admins.createUpdate');

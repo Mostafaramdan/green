@@ -249,11 +249,7 @@ class generalHelp extends index
 			]
 		];
 		$fields = json_encode ( $fields );
-		$key = $pushNotify->$target->getTable()=="users"?			
-			"AAAAbEHuctw:APA91bFExVqVaOu1vSzP8_LIv1V0NqomrMfM8U7xbQ4XOQ5dgoTx59MnJbm3CV8kBna7un-XY5LnmAioJdkGbndJ7czdkYuOvoXxp2X_Ag0A-dykBED479Me7JwCwyZ5YbAUakcyCL0N"
-			:
-			"AAAAQJrAivQ:APA91bEJK7OygPzhkIWHB6q6Ij6bPhfNkzq1Jkw9n4dmZUMN5ZGtj3HlUJTEu3_g5Cq4Fg1CI5uGL20bcdm7fOXNObIly99I0ueGVH2eilGGMntUDj78RCB1nHUwsYr_n_d91gn8CbLi"
-			;
+		$key = 'AAAALLByHOc:APA91bGsTfep_Wsdt4VAFXeO38EF1RJuyGYoGJadlwycy1WG6V8EmMgLxIMNInZTHlCq8bbdsjsdHhKBBm2FXmzO8LTYkG05g9a47B6o9oAy4EIWnHYwOyWLYrAg2z_S5h1QTcUlWirU';
 		$headers = [
 			'Authorization: key='.$key,
 			'Content-Type: application/json'

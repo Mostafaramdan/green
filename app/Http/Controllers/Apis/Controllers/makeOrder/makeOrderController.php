@@ -20,6 +20,12 @@ class makeOrderController extends index
         $carts=  carts::where('users_id',self::$account->id)
                       ->where('orders_id',null)
                       ->get();
+        if($carts->count()== 0){
+            return [
+                "status"=>404,
+                "message"=>"you don/'t have any carts "
+            ];
+        }
         $total = 0;
         foreach($carts as $cart){
             $product = products::find($cart->products_id);
@@ -44,26 +50,29 @@ class makeOrderController extends index
         $voucher= null ;
         if(self::$request->vouchers){
             $voucher = vouchers::where('code',self::$request->vouchers)->first();
+
             if(
                 $voucher && $voucher->is_active && $voucher->timeToUse > 0 &&
                 $voucher->startAt <= date("Y-m-d H:i") &&
                 $voucher->endAt	 > date("Y-m-d H:i") && 
                 users_uses_vouchers::where('users_id' ,self::$account->id)
                                    ->where('vouchers_id' , $voucher->id)
-                                   ->count()
+                                   ->count() ==0
                ){
                 $discount = $total/100 * $voucher->discountPercentage;
                 if($discount > $voucher->maximumDeduction ){
                     $discount= $voucher->maximumDeduction;
                 }
                 $total -= $total ;
+                users_uses_vouchers::createUpdate([
+                    'users_id' =>self::$account->id,
+                    'vouchers_id' => $voucher->id,
+                ]);
+                $voucher->timeToUse--;
+                $voucher->save();
             }
-            $voucher->timeToUse--;
-            $voucher->save();
-            users_uses_vouchers::createUpdate([
-                'users_id' =>self::$account->id,
-                'vouchers_id' => $voucher->id,
-            ]);
+           
+           
         }
         $location = locations::createUpdate([
             'longitude'=>self::$request->location['longitude'],
@@ -72,16 +81,17 @@ class makeOrderController extends index
             'users_id'=>self::$account->id
         ]);
 
+
         $order = orders::createUpdate([
             'users_id' =>self::$account->id,
             'totalPrice' =>$total,
             'paymentType' =>self::$request->paymentMethod,
             'locations_id'=>$location->id,
-            'vouchers_id' => $voucher->id,
+            'vouchers_id' => $voucher->id??null,
             'deliveryDate' =>self::$request->deliveryDate,
             'delivery_time_id' =>self::$request->timeOfDeliveryId,
             'notes' =>self::$request->notes,
-            'deliveryPrice' =>0,
+            'deliveryPrice' =>self::$account->region->deliveryPrice,
             'status'=>'waiting'
         ]);
         foreach($carts as $cart){

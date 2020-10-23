@@ -12,7 +12,7 @@ class getProductsController extends index
 {
     public static function api()
     {
-        $records=  products::allActive()->where('categories_id',self::$request->categoryId);
+        $records=  products::allActive()->where('categories_id',self::$request->categoryId)->where('discount',null);;
         return [
             "status"=>$records->forPage(self::$request->page+1,self::$itemPerPage)->count()?200:204,
             "totalPages"=>ceil($records->count()/self::$itemPerPage),

@@ -8,12 +8,12 @@ use App\Http\Controllers\Apis\Controllers\index;
 class GeneralModel extends Model
 {
     public $timestamps=false;
-    public static  $account, $lang , $helper;
+    public static  $account, $lang , $helper,$request;
 
     function __construct(){
         self::$account=index::$account;
         self::$lang=index::$lang;
-        self::$helper=helper::class;
+        self::$request=index::$request;
     }
 
     public static function allNoTrashed(){

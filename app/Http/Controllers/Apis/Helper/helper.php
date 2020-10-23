@@ -127,6 +127,27 @@ class helper extends generalHelp
 		$url = preg_replace("/ /", "%20", $url);
 		file_get_contents($url);
 
+	}
+	public static function translateStatus($status)
+    {
+        
+        $array = [
+			"ar"=>[
+				"waiting"=>" انتظار",
+				"accepted"=>"موافقة",
+				"onProgress"=>"في المعالجة",
+				"delivered"=>"تم التسليم",
+				
+			],
+			"en"=>[
+				"waiting"=>"waiting",
+				"accepted"=>"accepted",
+				"onProgress"=>"onProgress",
+				"delivered"=>"delivered",
+			]
+		];
+		return $array[self::$lang][$status];
+
     }
 
 }
