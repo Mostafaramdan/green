@@ -18,7 +18,7 @@ use App\Models\general_rooms_admins;
 use App\Models\general_rooms_messages;
 use App\Models\logs;
 use App\Models\notifications;
-use App\Models\notify;
+use App\Models\notify_users as notify;
 use App\Models\private_chats;
 use App\Models\private_chats_messages;
 use App\Models\private_rooms;
@@ -91,7 +91,7 @@ class helper extends generalHelp
 							'is_seen'         =>0,
 							'type'            =>$type
 						]);
-			self::sendFCM( $notify ,'target_user'); 
+			self::sendFCM( $notify ,'user'); 
 		}
 		return $notificationId??$notification->id;           
 	}	
@@ -123,10 +123,48 @@ class helper extends generalHelp
 	public static function sendSms($phone,$code)
     {
         
-        $url='https://www.safa-sms.com/api/sendsms.php?username=$tore@Bravo@123&password=ahmedm9001&message='.$code.'&sender=ANYTHING&numbers='.$phone.'&return=xml@Rmduplicated=1';
-		$url = preg_replace("/ /", "%20", $url);
-		file_get_contents($url);
+        $url='https://www.safa-sms.com/api/sendsms.php?username=ahmedm9001&password=$tore@Bravo@123&message='.$code.'&sender=ANYTHING&numbers='.$phone.'&return=xml@Rmduplicated=1';
+		self::get_web_page($url);
+		// $url = preg_replace("/ /", "%20", $url);
+		// file_get_contents($url);
 
+	}
+	public static function get_web_page( $url, $cookiesIn = '' ){
+        $options = array(
+            CURLOPT_RETURNTRANSFER => true,     // return web page
+            CURLOPT_HEADER         => true,     //return headers in addition to content
+            CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+            CURLOPT_ENCODING       => "",       // handle all encodings
+            CURLOPT_AUTOREFERER    => true,     // set referer on redirect
+            CURLOPT_CONNECTTIMEOUT => 120,      // timeout on connect
+            CURLOPT_TIMEOUT        => 120,      // timeout on response
+            CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+            CURLINFO_HEADER_OUT    => true,
+            CURLOPT_SSL_VERIFYPEER => true,     // Validate SSL Cert
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_COOKIE         => $cookiesIn
+        );
+
+        $ch      = curl_init( $url );
+        curl_setopt_array( $ch, $options );
+        $rough_content = curl_exec( $ch );
+        $err     = curl_errno( $ch );
+        $errmsg  = curl_error( $ch );
+        $header  = curl_getinfo( $ch );
+        curl_close( $ch );
+
+        $header_content = substr($rough_content, 0, $header['header_size']);
+        $body_content = trim(str_replace($header_content, '', $rough_content));
+        $pattern = "#Set-Cookie:\\s+(?<cookie>[^=]+=[^;]+)#m"; 
+        preg_match_all($pattern, $header_content, $matches); 
+        $cookiesOut = implode("; ", $matches['cookie']);
+
+        $header['errno']   = $err;
+        $header['errmsg']  = $errmsg;
+        $header['headers']  = $header_content;
+        $header['content'] = $body_content;
+        $header['cookies'] = $cookiesOut;
+		return $header;
 	}
 	public static function translateStatus($status)
     {
@@ -135,7 +173,7 @@ class helper extends generalHelp
 			"ar"=>[
 				"waiting"=>" انتظار",
 				"accepted"=>"موافقة",
-				"onProgress"=>"في المعالجة",
+				"onProgress"=>"قيد التنفيذ ",
 				"delivered"=>"تم التسليم",
 				
 			],

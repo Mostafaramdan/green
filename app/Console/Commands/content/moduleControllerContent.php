@@ -19,117 +19,119 @@ use App\Models\\'.$fileName.' as model;
 
 class '.$fileName.' extends Controller
 {
-public static $model;
-function __construct(Request $request)
-{
-    self::$model=model::class;
-}
-public static function index()
-{
-    $records= self::$model::all();
-    $totalPages= ceil($records->count()/config(\'helperDashboard.itemPerPage\'));
-    $currentPage= 1;
-    $records=$records->forpage(1,config(\'helperDashboard.itemPerPage\'));
-    return view(\'dashboard.'.$fileName.'.index\',compact("records","totalPages",\'currentPage\'));
-}   
-
-public static function indexPageing(Request $request)
-{
-  $sort=$request->sortType??\'sortBy\';
-  $records= self::$model::all()->$sort($request->sortBy??"id",);    if($request->search){
-        $search= $request->search;
-        $records= $records->filter(function($item) use ($search) {
-                return stripos($item[\'name\'],$search) !== false;
-            });
+    public static $model;
+    function __construct(Request $request)
+    {
+        self::$model=model::class;
     }
-    $totalPages= ceil($records->count()/config(\'helperDashboard.itemPerPage\'));
-    $currentPage= $request->currentPage;
-    $records=$records->forpage($request->currentPage,config(\'helperDashboard.itemPerPage\'));
-    $paging= (string) view(\'dashboard.layouts.paging\',compact(\'totalPages\',\'currentPage\'));
-    $tableInfo= (string) view(\'dashboard.'.$fileName.'.tableInfo\',compact(\'records\'));
-    return [\'paging\'=>$paging,\'tableInfo\'=>$tableInfo];
-}
+    public static function index()
+    {
+        $records= self::$model::all();
+        $totalPages= ceil($records->count()/config(\'helperDashboard.itemPerPage\'));
+        $currentPage= 1;
+        $records=$records->forpage(1,config(\'helperDashboard.itemPerPage\'));
+        return view(\'dashboard.'.$fileName.'.index\',compact("records","totalPages",\'currentPage\'));
+    }   
 
-public static function createUpdate(Request $request){
-    $rules=[
-        "name"     =>"required|min:3",
-        "email"    =>"required_if:phone,|regex:/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/|unique:users,email",
-        "phone"    =>"required_if:email,|numeric|between:100000000000,99999999999999999999|unique:users,phone",
-        \'regionId\' =>"required|exists:regions,id|",
-        "password" =>"required|min:6",
-    ];
-
-    $messages=[
-    ];
-
-    $messagesAr=[
-
-        "name.required"     =>"يجب ادخال الاسم",
-        "name.min"          =>"يجب ان لا يقل الاسم عن 3 حروف ",
-
-        "email.required_if" =>"يجب ادخال رقم التليفون او البريد الالكتوني",
-        "email.regex"       =>"يجب ادخال البريد الالكتروني بشكل صحيح",
-        "email.min"         =>"يجب ان لا يقل البريد الالكتروني عن 5 حروف ",
-        "email.unique"      =>"هذا البريد مسجل مسبقا",
-
-        "phone.required_if" =>"يجب ادخال رقم التليفون او البريد الالكتروني",
-        "phone.nemeric"     =>"يجب ادخال رقم التليفون بشكل صحيح ",
-        "phone.between"     =>"يجب ان لا يقل رقم التليفون عن 11 ارقام ولا يزيد عن 15 رقم ",
-        "phone.unique"      =>"هذا الهاتف مسجل مسبقا",
-        
-        "regionId.required" =>"يجب ادخال البلد ",
-        "regionId.exists"   =>"هذا الرقم غير مسجل في قاعدة البيانات",
-
-        "password.required" =>"يجب ادخال الرقم السري",
-        "password.min"      =>"يجب ان لا يقل الرقم السري عن 6 ارقام او حروف",
-
-    ];
-
-    $messagesEn=[
-        
-    ];
-    $ValidationFunction=$request->showAllErrors==1?\'showAllErrors\':\'Validator\';
-    $Validation = helper::{$ValidationFunction}($request->all(), $rules, $messages,\'en\'?$messagesAr:$messagesEn);
-    if ($Validation !== null) {    return $Validation;    }    
-    $record= self::$model::createUpdate([
-        \'name\'=>$request->name,
-        \'regions_id\'=>$request->regionId,
-        \'email\'=>$request->email,
-        \'phone\'=>$request->phone,
-        \'password\'=>$request->password,
-        \'image\'=>$request->image,  
-        \'is_android\'=>1, 
-        \'is_online\'=>0, 
-    ]);
-
-    $message=$request->id?"edited successfully":\'added successfully\';
-    
-    return response()->json([\'status\'=>200,\'message\'=>$message,\'record\'=>$record]);
-}
-
-public static function getRecord($id)
-{
-    return  self::$model::find($id);
-}
-public static function check($type, $id)
-{
-    $record= self::$model::find($id);
-    if($record->$type){
-        $action="false";
-        $record->$type=0;
-    }else{
-        $action="true";
-        $record->$type=1;
+    public static function indexPageing(Request $request)
+    {
+      $sort=$request->sortType??\'sortBy\';
+      $records= self::$model::all()->$sort($request->sortBy??"id",);    if($request->search){
+            $search= $request->search;
+            $records= $records->filter(function($item) use ($search) {
+                    return stripos($item[\'name\'],$search) !== false;
+                });
+        }
+        $totalPages= ceil($records->count()/config(\'helperDashboard.itemPerPage\'));
+        $currentPage= $request->currentPage>0?$request->currentPage:1;
+        $records=$records->forpage($currentPage,config(\'helperDashboard.itemPerPage\'));
+        $paging= (string) view(\'dashboard.layouts.paging\',compact(\'totalPages\',\'currentPage\'));
+        $tableInfo= (string) view(\'dashboard.'.$fileName.'.tableInfo\',compact(\'records\'));
+        return [\'paging\'=>$paging,\'tableInfo\'=>$tableInfo];
     }
-    $record->save();
-    return response()->json([\'status\',200,\'action\'=>$action]);
-}
-public static function delete($id)
-{
-    $record= self::$model::find($id);
-    $record->delete();
-    return response()->json([\'status\'=>200]);
-}
+
+    public static function createUpdate(Request $request)
+    {
+        $rules=[
+            "name"     =>"required|min:3",
+            "email"    =>"required_if:phone,|regex:/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/|unique:users,email",
+            "phone"    =>"required_if:email,|numeric|between:100000000000,99999999999999999999|unique:users,phone",
+            \'regionId\' =>"required|exists:regions,id|",
+            "password" =>"required|min:6",
+        ];
+
+        $messages=[
+        ];
+
+        $messagesAr=[
+
+            "name.required"     =>"يجب ادخال الاسم",
+            "name.min"          =>"يجب ان لا يقل الاسم عن 3 حروف ",
+
+            "email.required_if" =>"يجب ادخال رقم التليفون او البريد الالكتوني",
+            "email.regex"       =>"يجب ادخال البريد الالكتروني بشكل صحيح",
+            "email.min"         =>"يجب ان لا يقل البريد الالكتروني عن 5 حروف ",
+            "email.unique"      =>"هذا البريد مسجل مسبقا",
+
+            "phone.required_if" =>"يجب ادخال رقم التليفون او البريد الالكتروني",
+            "phone.nemeric"     =>"يجب ادخال رقم التليفون بشكل صحيح ",
+            "phone.between"     =>"يجب ان لا يقل رقم التليفون عن 11 ارقام ولا يزيد عن 15 رقم ",
+            "phone.unique"      =>"هذا الهاتف مسجل مسبقا",
+            
+            "regionId.required" =>"يجب ادخال البلد ",
+            "regionId.exists"   =>"هذا الرقم غير مسجل في قاعدة البيانات",
+
+            "password.required" =>"يجب ادخال الرقم السري",
+            "password.min"      =>"يجب ان لا يقل الرقم السري عن 6 ارقام او حروف",
+
+        ];
+
+        $messagesEn=[
+            
+        ];
+        $ValidationFunction=$request->showAllErrors==1?\'showAllErrors\':\'Validator\';
+        $Validation = helper::{$ValidationFunction}($request->all(), $rules, $messages,\'en\'?$messagesAr:$messagesEn);
+        if ($Validation !== null) {    return $Validation;    }    
+        $record= self::$model::createUpdate([
+            \'id\'=>$request->id,
+            \'name\'=>$request->name,
+            \'regions_id\'=>$request->regionId,
+            \'email\'=>$request->email,
+            \'phone\'=>$request->phone,
+            \'password\'=>$request->password,
+            \'image\'=>$request->image,  
+            \'is_android\'=>1, 
+            \'is_online\'=>0, 
+        ]);
+
+        $message=$request->id?"edited successfully":\'added successfully\';
+        
+        return response()->json([\'status\'=>200,\'message\'=>$message,\'record\'=>$record]);
+    }
+
+    public static function getRecord($id)
+    {
+        return  self::$model::find($id);
+    }
+    public static function check($type, $id)
+    {
+        $record= self::$model::find($id);
+        if($record->$type){
+            $action="false";
+            $record->$type=0;
+        }else{
+            $action="true";
+            $record->$type=1;
+        }
+        $record->save();
+        return response()->json([\'status\',200,\'action\'=>$action]);
+    }
+    public static function delete($id)
+    {
+        $record= self::$model::find($id);
+        $record->delete();
+        return response()->json([\'status\'=>200]);
+    }
 }
 
 '; 
@@ -195,7 +197,8 @@ public static function delete($id)
                             <button class="btn btn-primary " onClick="event.preventDefault();$(this).parents(\'.row\').find(\'input:file\').click();">اختر صورة <i class="fas fa-image"></i></button>
                         </div>
                         <div class="col-md-12">
-                          <input type="file" id="img" name="img" accept="image/*" hidden data-image="image" >
+                          <input type="file" id="img"  accept="image/*" hidden data-image="image" >
+                          <input type="hidden"  name="image" hidden  >
                           <img id="image" class="img-thumbnail" hidden style="border-radius: 50%;height: 50%;max-width: 50%;max-height: 200px;min-height: 200px;"/>
                           <hr/>
                         </div>
@@ -244,30 +247,29 @@ public static function delete($id)
           <div class="form-row">
             
             <div class="m-2">
-              <input type="search" class="form-control" placeholder="Search" name="search">
+              <input type="search" class="form-control" placeholder="بحث" name="search">
             </div>
 
             <div class="m-2">
               <select class="custom-select" name="sortBy">
-                <option selected disabled>order by</option>
-                <option value="name">name</option>
-                <option value="created_at">created at</option>
+                <option selected disabled>ترتيب علي حسب</option>
+                <option value="name">الاسم</option>
+                <option value="created_at">تاريخ الانشاء</option>
               </select>
             </div>
 
             <div class="m-2">
               <select class="custom-select"  name="sortType">
-                <option selected disabled>order type</option>
-                <option value="sortBy
-                ">Aescending</option>
-                <option value="sortByDesc">Descending</option>
+                <option selected disabled>نوع الترتيب</option>
+                <option value="sortBy">تصاعدي</option>
+                <option value="sortByDesc">تنازلي</option>
               </select>
             </div>
         </form>
 
         <div class="flex-grow-1"></div>
               <div class="m-2">
-                <button class="btn btn-primary px-5 add" onClick="event.preventDefault();" data-toggle="modal" data-target="#addEdit-new-modal"> ADD New '.ucwords(Str::singular(str_replace('_', ' ', $fileName))).' <i class="ml-2 fas fa-plus-circle"></i></button>
+                <button class="btn btn-primary px-5 add" onClick="event.preventDefault();" data-toggle="modal" data-target="#addEdit-new-modal"> إضافة  '.ucwords(Str::singular(str_replace('_', ' ', $fileName))).' <i class="ml-2 fas fa-plus-circle"></i></button>
               </div>
           </div>
         <div class="table-responsive">
@@ -334,20 +336,61 @@ public static function delete($id)
         $(".addEdit-new-modal .loading-container").toggleClass("d-none d-flix");
         for (var k in record) {
           if (record.hasOwnProperty(k)) {
-            if(k.includes(\'image\')  ){
+            if( k.includes(\'image\') || k.includes(\'Image\')  ){
               if(record[k]){  
-                $(\'img #\'+k).attr(\'src\', record[k]).attr("hidden",false);
+                $(\'img#\'+k).attr(\'src\', record[k]).attr("hidden",false);
               }else{
-                $(\'img #\'+k).attr("hidden",true);
+                 $(\'img #\'+k).attr("hidden",true);
               }
             }else if(k == \'password\'){
               $(".addEdit-new-modal input[name=\'"+k+"\']").val(null);
               continue;
             }else{
-              $(".addEdit-new-modal input[name=\'"+k+"\']").val(record[k]);
-              $(".addEdit-new-modal select[name=\'"+k+"\'] option[value=\'"+record[k]+"\']").prop(\'selected\', true);
+              if(k.charAt(0)== \'i\' && k.charAt(1)== "s"){
+                if( record[k] == 1){
+                  $(".addEdit-new-modal input[name=\'"+k+"\']").attr(\'checked\',true);
+                }else{
+                  $(".addEdit-new-modal input[name=\'"+k+"\']").attr(\'checked\',false);
+                }
+              }else{
+                $(".addEdit-new-modal input[name=\'"+k+"\']").val(record[k]);
+                $(".addEdit-new-modal select[name=\'"+k+"\'] option[value=\'"+record[k]+"\']").prop(\'selected\', true);
+                
+              }
             }
           }
+        }
+        $(\'.imageuploadify-container\').remove();
+        for (var i=0; i<record.images.length; i++){
+          $(\'.imageuploadify-images-list\').append(`
+            <div class="imageuploadify-container" style="margin-left: 12px;">
+              <button type="button" class="btn btn-danger glyphicon glyphicon-remove"data-table=\'images\' data-id="${record.images[i].id}" onClick="deleteImagefromDragDrop()"></button>
+              <div class="imageuploadify-details" style="opacity: 0;">
+                <span>Capture.PNG</span>
+                <span>image/png</span>
+                <span>159645</span>
+                </div>
+                <img src="${record.images[i].image}">
+              </div>
+          `);
+        }
+        
+        if(record.hasOffer == true){
+          $(".offer_Info").removeClass("d-none");
+          $("#customCheck1").attr(\'checked\',true);
+          $(".addEdit-new-modal input[name=\'discountPercentage\']").val(record.offer.discountPercentage);
+          $(".addEdit-new-modal input[name=\'maximumDeduction\']").val(record.offer.maximumDeduction);
+          $(".addEdit-new-modal input[name=\'startAt\']").val(record.offer.startAt);
+          $(".addEdit-new-modal input[name=\'endAt\']").val(record.offer.endAt);
+
+          
+        }else{
+          $(".offer_Info").addClass("d-none");
+          $("#customCheck1").attr(\'checked\',false);
+          $(".addEdit-new-modal input[name=\'discountPercentage\']").val("");
+          $(".addEdit-new-modal input[name=\'maximumDeduction\']").val("");
+          $(".addEdit-new-modal input[name=\'startAt\']").val("");
+          $(".addEdit-new-modal input[name=\'endAt\']").val("");
         }
       }
     });
@@ -381,8 +424,8 @@ aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
         <div class="carousel-inner">
           <div class="carousel-item active">
             <img style="width:75%"
-              src=https://images.unsplash.com/photo-1479231233972-e184fe70398e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=600&q=60"
-              class="d-block w-100">
+              src="https://images.unsplash.com/photo-1479231233972-e184fe70398e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=600&q=60"
+              class="d-block w-100 image" >
           </div>
           <a class="carousel-control-prev " href="#carouselExampleIndicators" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon bg-primary" aria-hidden="true"></span>
@@ -440,7 +483,7 @@ return
         <td>
             <!-- custom checkbox -->
             <label class="slider-check-box" >
-                <input type="checkbox" name="checkbox" @if($record->isActive) checked @endif data-type="isActive">
+                <input type="checkbox" name="checkbox" @if($record->is_active) checked @endif data-type="is_active">
                 <span class="check-box-container d-inline-block" >
                     <span class="circle"></span>
                 </span>

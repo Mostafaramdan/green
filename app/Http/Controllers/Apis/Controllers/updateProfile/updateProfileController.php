@@ -18,11 +18,11 @@ class updateProfileController extends index
             'name'=>self::$request->name,
             'email'=>self::$request->email,
             'image'=>self::$request->image,
-            'regions_id'=>self::$request->countryId,
+            'regions_id'=>self::$request->cityId,
             'lang'=>self::$request->lang,
         ]);
         $session= null ;
-        if(self::$request->phone){
+        if(self::$request->phone && self::$request->phone != self::$account->phone){
             sessions::where('users_id',self::$account->id)->delete();
             $session= sessions::createUpdate([
                 'users_id'=>self::$account->id,
@@ -35,7 +35,7 @@ class updateProfileController extends index
 
         return [
             "status"=>200,
-            "user"=>objects::user(self::$account),
+            "user"=>objects::user(users::find(self::$account->id)),
             "tmpToken"=>$session->tmp_token??null
         ];
     }

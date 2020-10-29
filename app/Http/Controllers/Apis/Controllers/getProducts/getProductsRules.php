@@ -12,11 +12,15 @@ class getProductsRules extends index
     public static function rules (){
         
         $rules=[
+            "apiToken"    =>"required|exists:users,api_token",
             "categoryId"   =>"required|exists:categories,id",
             "page"      =>"required|numeric"
         ];
 
         $messages=[
+            "apiToken.required"     =>400,
+            "apiToken.exists"       =>405,
+    
             "categoryId.required"     =>400,
             "categoryId.exists"       =>405,
 

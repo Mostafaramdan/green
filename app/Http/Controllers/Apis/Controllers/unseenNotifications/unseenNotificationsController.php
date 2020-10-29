@@ -15,7 +15,7 @@ class unseenNotificationsController extends index
         $unseen=  notify_users::where(self::$account->getTable().'_id',self::$account->id)->where('isSeen',0)->count();
         return [
             "status"=>200,
-            "unseen"=>$unseen
+            "count"=>$unseen
         ];
     }
 }

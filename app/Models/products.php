@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class products extends GeneralModel
 {
-    protected $table = 'products',$appends=['discount','offer','price','finalPrice'];
+    protected $table = 'products',$with=["images"],$appends=[
+                                                            'discount','offer',
+                                                            'hasOfferAr','hasOffer',
+                                                            'price','finalPrice',
+                                                            'isShipmentAr'
+                                                            ];
     public $timestamps=false;
     public static function createUpdate($params)
     {
@@ -21,7 +26,10 @@ class products extends GeneralModel
         $record->price_AED =isset($params['price_AED'])?$params['price_AED']: $record->price_AED;
         $record->quantity =isset($params['quantity'])?$params['quantity']: $record->quantity;
         $record->isShipment =isset($params['isShipment'])?$params['isShipment']: $record->isShipment;
+        $record->serial =isset($params['serial'])?$params['serial']: $record->serial;
+        $record->mainImage =isset($params['mainImage'])?self::$helper::base64_image( $params['mainImage'],'products'): $record->mainImage;
         $record->categories_id =isset($params['categories_id'])?$params['categories_id']: $record->categories_id;
+        isset($params['id'])?:$record->created_at = date("Y-m-d H:i:s");
         $record->save();
         return $record;
     }
@@ -48,9 +56,28 @@ class products extends GeneralModel
         }
         return null;
     }
+    function GetHasOfferAttribute()
+    {
+        $offer = offers::where('products_id',$this->id)->where('is_active',1)->first();
+        if($offer){
+            if($offer->startAt <= date("Y-m-d h:i") && $offer->endAt > date("Y-m-d h:i"))
+                return true;
+        }
+            return false;
+    }
+    function GetHasOfferArAttribute()
+    {
+        $offer = offers::where('products_id',$this->id)->where('is_active',1)->first();
+        if($offer){
+            if($offer->startAt <= date("Y-m-d h:i") && $offer->endAt > date("Y-m-d h:i"))
+                return 'نعم';
+        }
+            return 'لا';
+    }
+
     function GetPriceAttribute()
     {
-        $currency = self::$request->currency ?? "EGP";
+        $currency = self::$account->region->currency ?? "EGP";
         $price = 'price_'.$currency;
         return $this->getAttribute($price);
 
@@ -60,4 +87,12 @@ class products extends GeneralModel
         return $this->discount ?$this->price - ($this->discount/100 *$this->price) : $this->price;
 
     }
+    function getIsShipmentArAttribute()
+    {
+        if($this->isShipment){
+            return 'نعم';
+        }
+        return 'لا';
+    }
+    
 }

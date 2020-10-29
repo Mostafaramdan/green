@@ -15,7 +15,7 @@ class carts extends GeneralModel
         $record->quantity = isset($params["quantity"])? $params["quantity"]: $record->quantity;
         $record->price = isset($params["price"])? $params["price"]: $record->price;
         $record->offers_id = isset($params["offers_id"])? $params["offers_id"]: $record->offers_id;
-        $record->currency = isset($params["currency"])? $params["currency"]: $record->currency;
+        // $record->currency = isset($params["currency"])? $params["currency"]: $record->currency;
         $record->isShipment = isset($params["isShipment"])? $params["isShipment"]: $record->isShipment;
         $record->discountPercentage = isset($params["discountPercentage"])? $params["discountPercentage"]: $record->discountPercentage;
         $record->products_id = isset($params["products_id"])? $params["products_id"]: $record->products_id;

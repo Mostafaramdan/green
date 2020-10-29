@@ -25,12 +25,13 @@ public static function index()
         $record =
             self::$model::createUpdate([
                 'id'=>$recor->id??null,
-                'about_us_ar'=>" . ",
-                "about_us_en"=>" . ",
-                "policy_terms_ar"=>" .",
-                "policy_terms_en"=>" .",
-                "fees"=>1,
-                "distance"=>1
+                'aboutUs_ar'=>" . ",
+                "aboutUs_en"=>" . ",
+                "policyTerms_ar"=>" .",
+                "policyTerms_en"=>" .",
+                "email"=>" .",
+                "phone"=>" .",
+                "daysToDelivery"=>1
             ]);
     }
     return view('dashboard.app_settings.index',compact("record"));
@@ -48,34 +49,14 @@ public static function createUpdate(Request $request){
     $record= self::$model::first();
     $record=    self::$model::createUpdate([
             'id'=>$record->id,
-            'about_us_ar'=>$request->about_us_ar,
-            "about_us_en"=>$request->about_us_en,
-            "policy_terms_ar"=>$request->policy_terms_ar,
-            "policy_terms_en"=>$request->policy_terms_en,
-            "fees"=>$request->fees,
-            "distance"=>$request->distance
+            'aboutUs_ar'=>$request->aboutUs_ar,
+            "aboutUs_en"=>$request->aboutUs_en,
+            "policyTerms_ar"=>$request->policyTerms_ar,
+            "policyTerms_en"=>$request->policyTerms_en,
+            "email"=>$request->email,
+            "phone"=>$request->phone,
+            "daysToDelivery"=>$request->daysToDelivery
         ]);
-
-    if($request->phones){
-        phones::where('app_settings_id',$record->id)->delete();
-        foreach(explode(",",$request->phones) as $phone){
-            phones::createUpdate([
-                "phone"=>$phone,
-                "app_settings_id"=>$record->id
-            ]);
-        }
-    }
-    if($request->emails){
-        emails::where('app_settings_id',$record->id)->delete();
-        foreach(explode(",",$request->emails) as $email){
-            emails::createUpdate([
-                "email"=>$email,
-                "app_settings_id"=>$record->id
-            ]);
-        }
-    }
-
-
     $message=$request->id?"edited successfully":'added successfully';
     
     return response()->json(['status'=>200,'message'=>$message,'record'=>$record]);

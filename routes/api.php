@@ -52,3 +52,4 @@ route::ANY('getOrderInfo','index@index');
 route::post('getVouchers','index@index');
 route::post('visitors','index@index');
 route::post('contactUs','index@index');
+route::post('updateRegion','index@index');

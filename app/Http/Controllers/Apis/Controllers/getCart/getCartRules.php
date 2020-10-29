@@ -14,6 +14,7 @@ class getCartRules extends index
         
         $rules=[
             "apiToken"   =>"required|exists:users,api_token",
+            
         ];
 
         $messages=[

@@ -10,9 +10,10 @@ class dashboard
     public function handle($request, Closure $next){
        
         if(Auth::guard('dashboard')->check()  ) { 
-            if(Auth::guard('dashboard')->user()->is_super_admin){
+            if(Auth::guard('dashboard')->user()->isSuperAdmin){
                 return $next($request);
             }else{
+                return $next($request);
                 if(explode( '/' ,url()->previous())[4] == 'login'){
                     return $next($request);
                 }else{

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Apis\Helper\helper;
 use App\Models\categories as model;
 use  App\Http\Controllers\Apis\Controllers\index;
+use App\Models\images ;
+use App\Models\offers ;
 
 class categories extends Controller
 {
@@ -48,6 +50,14 @@ public static function createUpdate(Request $request){
         "name_ar"     =>"required|min:3",
         "name_en"     =>"required|min:3",
     ];
+    if($request->has('offer')){
+        $rules=[
+            "discountPercentage" =>"required|numeric|min:1|max:99",
+            "maximumDeduction"   =>"required|numeric|min:1",
+            "startAt"            =>"required|after:".date("Y-m-d H:i:s"),
+            "endAt"              =>"required|after:startAt",
+        ];
+    }
 
     $messages=[
     ];
@@ -59,6 +69,22 @@ public static function createUpdate(Request $request){
 
         "name_en.required"     =>"يجب ادخال الاسم بالإنجليزية",
         "name_en.min"          =>"يجب ان لا يقل الاسم بالإنجليزية عن 3 حروف ",
+
+        "discountPercentage.required"         =>"يجب ادخال نسبة الخصم ",
+        "discountPercentage.min"              =>"يجب ادخال  نسبة الخصم بشكل صحيح ",
+        "discountPercentage.max"              =>"يجب ادخال  نسبة الخصم بشكل صحيح ",
+
+        "maximumDeduction.required" =>"يجب ادخال اكبر رقم للخصم   ",
+        "maximumDeduction.min"      =>" يجب ادخال اكبر رقم للخصم بشكل صحيح   ",
+
+        "startAt.required"     =>"يجب ادخال تاريخ البداية  ",
+        "startAt.after"     =>" يجب ادخال تاريخ البداية بعد الوقت الحالي  ",
+
+        "endAt.required"     =>"يجب ادخال تاريخ النهاية  ",
+        "endAt.after"     =>" يجب ادخال تاريخ النهاية بعد تاريخ البداية   ",
+
+
+
     ];
 
     $messagesEn=[
@@ -74,6 +100,35 @@ public static function createUpdate(Request $request){
         'categories_id'=>$request->categories_id,
         'is_active'=>1
     ]);
+    $newOffer= true;
+    if($request->has('offer')){
+        if($record->offer){
+            $offer= $record->offer;
+            if($offer->discount == $request->discount && 
+                $offer->maximumDeduction == $request->maximumDeduction && 
+                $offer->startAt == $request->startAt && 
+                $offer->endAt == $request->endAt 
+            ){
+                $newOffer=false;
+            }else{
+                $offer->is_active= 0;
+                $offer->save();
+                $newOffer=true;
+            }
+        }else{
+            $newOffer=true;
+        }
+        if ($newOffer){
+            offers::createUpdate([
+                'categories_id'=>$record->id,
+                "discountPercentage"=>$request->discountPercentage,
+                "maximumDeduction"=>$request->maximumDeduction,
+                "startAt"=>$request->startAt,
+                "endAt"=>$request->endAt,
+            ]);
+
+        }
+    }
 
     $message=$request->id?"edited successfully":'added successfully';
     

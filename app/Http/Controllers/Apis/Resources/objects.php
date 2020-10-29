@@ -23,7 +23,7 @@ class objects extends index{
         $object['currency']=$record->currency;
         $object['stateKey']=$record->stateKey;
         $object['deliveryPrice']=$record->deliveryPrice;
-        $record->logo==null?:$object['logo'] =Request()->root().$record->logo;   
+        $record->logo_image==null?:$object['logo'] =Request()->root().$record->logo_image;   
         count($record->regions) > 0? $object['cities']=self::ArrayOfObjects($record->regions->sortBy('id'),'city'):null;
         return $object;
     }  
@@ -83,6 +83,7 @@ class objects extends index{
         $object['images']=$record->images->pluck('image_url')->toArray();
         $record->mainImage==null?$object['mainImage'] = Request()->root().'/default.png':$object['mainImage'] =Request()->root().$record->mainImage;   
         $object['price'] = $record->price;
+        $object['currency']=self::$account->region->currency;
         $object['serial'] = $record->serial;
         $record->discount ? $object['discount'] = $record->discount: null ;
         $record->discount ? $object['newPrice'] = $record->price - ($record->discount/100 *$record->price) : null ;
@@ -109,7 +110,7 @@ class objects extends index{
         $object = [];
         $object['id'] = $record->id;
         $object['name'] = $record->name;
-        $record->image?$object['image'] =Request()->root().$record->image:null;   
+        $record->image?$object['image'] =Request()->root().$record->image:$object['image'] =null;   
         $object['email'] = $record->email;
         $object['lang'] = $record->lang;
         $object['city'] = self::city($record->region);
@@ -147,7 +148,8 @@ class objects extends index{
         $record->price ? $object['price']=$record->price : null ;
         $record->paymentType  ? $object['paymentMethod']=$record->paymentType : null  ;
         $record->notes ? $object['note']=$record->notes : null ;
-        $record->deliveryPrice ? $object['deliveryPrice']=$record->deliveryPrice : null ;
+        $object['deliveryPrice']=$record->deliveryPrice ;
+        $object['currency']=self::$account->region->currency;
         $object['productsPrice']=$record->carts->sum('product_price');
         $object['totalPrice']=$record->carts->sum('product_price') + $record->deliveryPrice;
         $object['status']=helper::translateStatus($record->status);
@@ -186,6 +188,7 @@ class objects extends index{
         $object['id'] = $record->id;
         $object['carts'] =self::ArrayOfObjects($record->carts , 'cart');
         $object['status'] =$record->status;
+        $object['currency']=self::$account->region->currency;
         $object['totalPrice'] = $record->totalPrice;
         $object['createdAt'] = Carbon::parse($record->created_at)->timestamp;
        

@@ -14,6 +14,7 @@ class GeneralModel extends Model
         self::$account=index::$account;
         self::$lang=index::$lang;
         self::$request=index::$request;
+        self::$helper = helper::class;
     }
 
     public static function allNoTrashed(){

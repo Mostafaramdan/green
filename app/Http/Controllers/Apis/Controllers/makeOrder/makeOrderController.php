@@ -87,17 +87,19 @@ class makeOrderController extends index
             'totalPrice' =>$total,
             'paymentType' =>self::$request->paymentMethod,
             'locations_id'=>$location->id,
+            'currency' => self::$account->region->currency,
             'vouchers_id' => $voucher->id??null,
-            'deliveryDate' =>self::$request->deliveryDate,
+            'deliveryDate' =>self::$request->date,
             'delivery_time_id' =>self::$request->timeOfDeliveryId,
-            'notes' =>self::$request->notes,
+            'notes' =>self::$request->note,
             'deliveryPrice' =>self::$account->region->deliveryPrice,
             'status'=>'waiting'
         ]);
         foreach($carts as $cart){
-            $cart->orders_id= $order->id;
-            $cart->save();
             $product= products::find($cart->products_id);
+            $cart->orders_id= $order->id;
+            $cart->price= $product->price;
+            $cart->save();
             $product->quantity -= $cart->quantity;
             $product->save();
         }

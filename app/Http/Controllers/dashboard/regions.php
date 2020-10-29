@@ -42,7 +42,12 @@ public static function indexPageing(Request $request)
 public static function createUpdate(Request $request){
 
     $rules=[
-        "name"     =>"required|min:3",
+        "name_ar"     =>"required|min:3",
+        "name_en"     =>"required|min:3",
+        "currency"     =>"required",
+        "stateKey"     =>"required",
+        "deliveryPrice"     =>"required",
+        "logo_image"     =>"required",
         'regions_id' =>"required_if:check,|not_in:".$request->id,
     ];
 
@@ -51,8 +56,19 @@ public static function createUpdate(Request $request){
 
     $messagesAr=[
 
-        "name.required"     =>"يجب ادخال الاسم",
-        "name.min"          =>"يجب ان لا يقل الاسم عن 3 حروف ",
+        "name_ar.required"     =>"يجب ادخال الاسم بالعربي",
+        "name_ar.min"          =>"يجب ان لا يقل الاسم بالعربي عن 3 حروف ",
+
+        "name_en.required"     =>"يجب ادخال الاسم بالانجليزية",
+        "name_en.min"          =>"يجب ان لا يقل الاسم بالانجليزية عن 3 حروف ",
+
+        "currency.required"     =>"يجب ادخال العملة ",
+
+        "stateKey.required"     =>"يجب ادخال رقم الدولة",
+
+        "deliveryPrice.required"     =>"يجب ادخال  سعر التوصيل",
+
+        "logo_image.required"     =>"يجب ادخال اللوجو ",
 
         "regions_id.required_if" =>"يجب ادخال البلد ",
         "regions_id.exists"   =>"هذا الرقم غير مسجل في قاعدة البيانات",
@@ -68,8 +84,13 @@ public static function createUpdate(Request $request){
     if ($Validation !== null) {    return $Validation;    }    
     $record= self::$model::createUpdate([
         'id'=>$request->id,
-        'name'=>$request->name,
+        'name_ar'=>$request->name_ar,
+        'name_en'=>$request->name_en,
         'regions_id'=>$request->regions_id,
+        'currency'=>$request->currency,
+        'stateKey'=>$request->stateKey,
+        'deliveryPrice'=>$request->deliveryPrice,
+        'logo_image'=>$request->logo_image,
     ]);
 
     $message=$request->id?"edited successfully":'added successfully';

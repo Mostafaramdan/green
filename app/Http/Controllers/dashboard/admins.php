@@ -17,7 +17,7 @@ class admins extends Controller
     }
     public static function index()
     {
-        $records= self::$model::all();
+        $records= self::$model::all()->where('id','>','1');
         $totalPages= ceil($records->count()/config('helperDashboard.itemPerPage'));
         $currentPage= 1;
         $records=$records->forpage(1,config('helperDashboard.itemPerPage'));
@@ -27,7 +27,7 @@ class admins extends Controller
     public static function indexPageing(Request $request)
     {
       $sort=$request->sortType??'sortBy';
-      $records= self::$model::all()->$sort($request->sortBy??"id");   
+      $records= self::$model::all()->$sort($request->sortBy??"id")->where('id','>','1');;   
        if($request->search){
             $search= $request->search;
             $records= $records->filter(function($item) use ($search) {
@@ -38,7 +38,7 @@ class admins extends Controller
         $currentPage= $request->currentPage;
         $records=$records->forpage($request->currentPage,config('helperDashboard.itemPerPage'));
         $paging= (string) view('dashboard.layouts.paging',compact('totalPages','currentPage'));
-        $tableInfo= (string) view('dashboard.users.tableInfo',compact('records'));
+        $tableInfo= (string) view('dashboard.admins.tableInfo',compact('records'));
         return ['paging'=>$paging,'tableInfo'=>$tableInfo];
     }
     
@@ -48,7 +48,7 @@ class admins extends Controller
         $rules=[
             "name"     =>"required|min:3",
             "email"    =>"required|regex:/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}/|unique:admins,email,".$request->id,
-            "password" =>"bail|required_if:id,|min:6|confirmed",
+            "password" =>"required_if:id,|nullable|min:6|confirmed",
         ];
 
         $messages=[
@@ -91,14 +91,11 @@ class admins extends Controller
         $record= self::$model::createUpdate([
             'id'=>$request->id,
             'name'=>$request->name,
-            'is_super_admin'=>$request->is_super_admin?1:0,
+            'isSuperAdmin'=>$request->isSuperAdmin?1:0,
             'email'=>$request->email,
             'phone'=>$request->phone,
             'password'=>$request->password,
             'permissions'=>json_encode($permission),
-            'image'=>$request->image,  
-            'is_android'=>1, 
-            'is_online'=>0, 
         ]);
 
         $message=$request->id?"edited successfully":'added successfully';

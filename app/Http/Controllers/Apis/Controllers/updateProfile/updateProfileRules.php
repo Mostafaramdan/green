@@ -16,9 +16,9 @@ class updateProfileRules extends index
             "apiToken"  =>"required|exists:users,api_token",
             "name"      =>"min:3|max:30",
             "image"     =>"nullable",
-            "email"     =>"nullable|email|unique:users,email",
-            "phone"    =>"nullable|numeric|between:10000000,999999999999999|unique:users,phone",
-            'countryId' =>'nullable|exists:regions,id'
+            "email"     =>"nullable|email|unique:users,email,".self::$account->id,
+            "phone"    =>"nullable|numeric|between:10000000,999999999999999|unique:users,phone,".self::$account->id,
+            'cityId' =>'nullable|exists:regions,id'
         ];
 
         $messages=[
@@ -37,8 +37,8 @@ class updateProfileRules extends index
             "phone.unique"       =>410,
 
 
-            "countryId.required"  =>400,
-            "countryId.exists"    =>405,
+            "cityId.required"  =>400,
+            "cityId.exists"    =>405,
 
         ];
 
@@ -57,8 +57,8 @@ class updateProfileRules extends index
             "phone.between"       =>"يجب ان لا يقل رقم التليفون عن 11 ارقام ولا يزيد عن 15 رقم ",
             "phone.unique"        =>" هذا الرقم موجود ",
 
-            "countryId.required"  =>"يجب إدخال رقم الدولة",
-            "countryId.exists"    =>"رقم الدولة غير موجود",
+            "cityId.required"  =>"يجب إدخال رقم الدولة",
+            "cityId.exists"    =>"رقم الدولة غير موجود",
         ];
 
         $messagesEn=[

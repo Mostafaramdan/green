@@ -12,13 +12,12 @@ class notify_users extends GeneralModel
 
         $record= isset($params['id'])? self::find($params['id']) :new self();
         $record->notifications_id = $params['notifications_id']?? $record->notifications_id;
-        $record->isSeen = isset($params['isSeen'])? $params['isSeen']: $record->isSeen;
         $record->users_id = isset($params['users_id'])? $params['users_id']: $record->users_id;
         isset($params['id'])?:$record->created_at = date("Y-m-d H:i:s");
         $record->save();
         return $record;
     }
-    public function notification (){
+    public function notifications (){
         return $this->belongsTo(notifications::class,'notifications_id');
     }
     public function user (){

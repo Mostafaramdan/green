@@ -15,7 +15,8 @@ class addToCartRules extends index
         $rules=[
             "apiToken"    =>"required|exists:users,api_token",
             "productId"   =>"required|exists:products,id",
-            "quantity"    =>"required|numeric"
+            "quantity"    =>"required|numeric",
+            // "currency"     =>"required|in:SAR,EGP,AED,KW"
         ];
 
         $messages=[
@@ -26,7 +27,10 @@ class addToCartRules extends index
             "productId.exists"         =>405,
 
             "quantity.required"         =>400,
-            "quantity.numeric"          =>405
+            "quantity.numeric"          =>405,
+
+            "currency.required"         =>400,
+            "currency.in"         =>405,
         ];
 
         $messagesAr=[   

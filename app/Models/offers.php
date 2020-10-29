@@ -22,18 +22,10 @@ class offers extends GeneralModel
         $record->deleted_at = isset($params["deleted_at"])? date("Y-m-d H:i:s"):null;
         isset($params["id"])?:$record->created_at = date("Y-m-d H:i:s");
         $record->save();
-        return $record;
-    }
-    function GetNameAttribute(){
-        $name= 'name_'.index::$lang;
-        return $this->$name;
-    }
-    public function product(){
-        return $this->belongsTo(products::class,'products_id'); 
     }
     function GetCategoriesIdAttribute()
     {
-        return $this->product->categories_id;
+        return $this->product->categories_id??null;
     } 
 
 }

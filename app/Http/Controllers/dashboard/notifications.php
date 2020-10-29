@@ -19,7 +19,7 @@ function __construct(Request $request)
 }
 public static function index()
 {
-    $records= self::$model::all()->where('type','dashboard');
+    $records= self::$model::all()->where('orders_id',null);
     $totalPages= ceil($records->count()/config('helperDashboard.itemPerPage'));
     $currentPage= 1;
     $records=$records->forpage(1,config('helperDashboard.itemPerPage'));
@@ -28,7 +28,7 @@ public static function index()
 
 public static function indexPageing(Request $request)
 {
-    $records= self::$model::orderBy($request->sortBy??"id",$request->sortType??'asc')->where('type','dashboard')->get();
+    $records= self::$model::orderBy($request->sortBy??"id",$request->sortType??'asc')->where('orders_id',null)->get();
     if($request->search){
         $search= $request->search;
         $records= $records->filter(function($item) use ($search) {
@@ -78,12 +78,14 @@ public static function createUpdate(Request $request)
         self::$model::where('id',$request->id)->delete();
     }
     if(!$request->checkType){
-        $table='\App\Models\\'.$request->users_type."s";
-        $users = $table::allActive();
+        if($request->users_type == 'users'){
+            $users= users::where('phone','!=',null)->get();
+        }else{
+            $users= users::where('phone',null)->get();
+        }
         $users?helper::newNotify($users,$request->content_ar,$request->content_en,null,'dashboard'):null;            
     }else{
         $notificationId = helper::newNotify(users::allActive(),$request->content_ar,$request->content_en,null,'dashboard');        
-        helper::newNotify(providers::allActive(),$request->content_ar,$request->content_en,null,'dashboard',$notificationId);            
 
     }
     $message=$request->id?"edited successfully":'added successfully';

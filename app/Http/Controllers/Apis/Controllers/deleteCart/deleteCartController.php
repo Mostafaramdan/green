@@ -27,5 +27,13 @@ class deleteCartController extends index
             "status"=>200,
             "carts"=>objects::ArrayOfObjects($records,"cart"),
         ];
+        return [
+            "status"=>200,
+            "totalPages"=>ceil($records->count()/self::$itemPerPage),
+            "totalCarts"=>$records->sum('product_price') ,
+            "deliveryPrice"=> self::$account->region->deliveryPrice,
+            "carts"=>objects::ArrayOfObjects($records,"cart"),
+        ];
+
     }
 }

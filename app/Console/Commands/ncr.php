@@ -51,7 +51,7 @@ class ncr extends Command
         fwrite($myfile, "\n". $txt);
         fclose($myfile);
 
-        $this->info("create controller and rules of {$folderName} successfully by mostafa ramdan");
+        $this->info("create controller and rule  of {$folderName} successfully by mostafa ramdan");
 
     }
     public static function controllerFile($folderName){

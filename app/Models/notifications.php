@@ -13,7 +13,7 @@ class notifications extends GeneralModel
         $record= isset($params['id'])? self::find($params['id']) :new self();
         $record->content_ar = isset($params['content_ar'])?$params['content_ar']: $record->content_ar;
         $record->content_en = isset($params['content_en'])?$params['content_en']: $record->content_en;
-        $record->users_id = isset($params['users_id'])?$params['users_id']: $record->users_id;
+        $record->orders_id = isset($params['orders_id'])?$params['orders_id']: $record->orders_id;
         isset($params['id'])?:$record->created_at = date("Y-m-d H:i:s");
         $record->save();
         return $record;

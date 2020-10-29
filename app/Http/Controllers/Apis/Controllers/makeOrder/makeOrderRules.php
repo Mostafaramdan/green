@@ -20,9 +20,11 @@ class makeOrderRules extends index
             'location.address'   =>'required',
             'vouchers'           =>'nullable|exists:vouchers,code',
             "timeOfDeliveryId"   =>"required|exists:delivery_time,id",
-            "deliveryDate"               =>"date_format:Y-m-d",
+            "date"       =>"required|date_format:Y-m-d",
             "paymentMethod"      =>'required|in:Cash',
-            'note'               =>'nullable'                   
+            'note'               =>'nullable' ,
+            // "currency"     =>"required|in:SAR,EGP,AED,KW"
+                  
         ];
 
         $messages=[
@@ -41,10 +43,14 @@ class makeOrderRules extends index
             "timeOfDeliveryId.required"     =>400,
             "timeOfDeliveryId.exists"       =>405,
 
-            "deliveryDate.date_format"              =>405,
+            "date.date_format"              =>405,
 
             "paymentMethod.required"        =>400,
             "paymentMethod.in"              =>405,
+
+            "currency.required"             =>400,
+            "currency.in"                   =>405,
+
         ];
 
         $messagesAr=[   
@@ -61,11 +67,14 @@ class makeOrderRules extends index
             "timeOfDeliveryId.required"=>"يجب أدخال رقم وقت التوصيل",
             "timeOfDeliveryId.exists"  =>"رقم وقت التوصيل غير موجود",
 
-            "deliveryDate.date_format"  =>"(Y-m-d) يجب إدخال صيغة التاريخ بشكل صحيح ",
+            "date.required"=>"يجب أدخال  وقت التوصيل",
+            "date.date_format"  =>"(Y-m-d) يجب إدخال صيغة التاريخ بشكل صحيح ",
 
             "paymentMethod.required"    =>"يجب إدخال طريقة الدفع",
             "paymentMethod.in"          =>"(Cash , ) يجب إدخال طريقة الدفع بشكل صحيح ",
 
+            "currency.required"         =>400,
+            "currency.in"         =>405,
         ];
 
         $messagesEn=[

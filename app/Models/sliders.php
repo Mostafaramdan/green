@@ -16,7 +16,7 @@ class sliders extends GeneralModel
         $record->startAt = isset($params["startAt"])? $params["startAt"]: $record->startAt;
         $record->endAt = isset($params["endAt"])? $params["endAt"]: $record->endAt;
         $record->url = isset($params["url"])? $params["url"]: $record->url;
-        $record->image = isset($params["image"])?helper::uploadPhoto( $params["image"],'slider/'): $record->image;
+        $record->image =isset($params['image'])?helper::base64_image( $params['image'],'sliders'): $record->image;
         isset($params["id"])?:$record->created_at = date("Y-m-d H:i:s");
         $record->save();
         return $record;

@@ -17,13 +17,6 @@ class RouteServiceProvider extends ServiceProvider
     protected $namespace = 'App\Http\Controllers';
 
     /**
-     * The path to the "home" route for your application.
-     *
-     * @var string
-     */
-    public const HOME = '/home';
-
-    /**
      * Define your route model bindings, pattern filters, etc.
      *
      * @return void
@@ -45,6 +38,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapApiRoutes();
 
         $this->mapWebRoutes();
+        $this->mapDashboardRoutes();
 
         //
     }
@@ -59,8 +53,15 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/web.php'));
+             ->namespace($this->namespace)
+             ->group(base_path('routes/web.php'));
+    }
+    protected function mapDashboardRoutes()
+    {
+        Route::middleware('web')
+             ->prefix('dashboard')
+             ->namespace($this->namespace.'\dashboard')
+             ->group(base_path('routes/dashboard.php'));
     }
 
     /**
@@ -73,8 +74,8 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         Route::prefix('api')
-            ->middleware('api')
-            ->namespace("App\Http\Controllers\Apis\Controllers")
-            ->group(base_path('routes/api.php'));
+             ->middleware('api')
+             ->namespace($this->namespace.'\Apis\Controllers')
+             ->group(base_path('routes/api.php'));
     }
 }

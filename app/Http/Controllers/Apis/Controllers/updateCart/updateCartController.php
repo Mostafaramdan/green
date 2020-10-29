@@ -25,25 +25,27 @@ class updateCartController extends index
         carts::createUpdate([
             'id'=>$record->id,
             'quantity'=> self::$request->quantity ,
-            'price' => $product->finalPrice,
+            // 'price' => $product->finalPrice,
             'currency' => $product->currency,
             'offers_id'=>$product->offer->id??null,
             'isShipment'=>$product->isShipment,
             'discountPercentage'=>$product->discount,
         ]);
-        if($product->price != $record->price ){
-            return [
-                'status'=>201,
-                'currentPrice'=>$product->price
-            ];
-        }
+        // if($product->price != $record->price ){
+        //     return [
+        //         'status'=>201,
+        //         'currentPrice'=>$product->price
+        //     ];
+        // }
         $records=  carts::where('users_id',self::$account->id)
                         ->where('orders_id',null)
                         ->get();
         return [
-            "status"=>$records->forPage(self::$request->page+1,self::$itemPerPage)->count()?200:204,
+            "status"=>200,
             "totalPages"=>ceil($records->count()/self::$itemPerPage),
-            "carts"=>objects::ArrayOfObjects($records->forPage(self::$request->page+1,self::$itemPerPage),"cart"),
+            "totalCarts"=>$records->sum('product_price') ,
+            "deliveryPrice"=> self::$account->region->deliveryPrice,
+            "carts"=>objects::ArrayOfObjects($records,"cart"),
         ];
     }
 }

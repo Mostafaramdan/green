@@ -12,7 +12,7 @@ class loginRules extends index
     public static function rules (){
         
         $rules=[
-            "phone"    =>"required_if:apiToken,|numeric|between:10000000,999999999999999",
+            "phone"    =>"required:apiToken,|numeric|between:10000000,999999999999999",
             "fireBaseToken"  =>"required_if:apiToken,",
             "cityId" =>"required_if:apiToken,|exists:regions,id",
             "lang"     =>"in:ar,en",
@@ -25,7 +25,7 @@ class loginRules extends index
             "type.required"      =>400,
             "type.in"            =>405,
 
-            "phone.required_if"     =>400,
+            "phone.required"     =>400,
             "phone.numeric"      =>405,
             "phone.between"      =>405,
 
@@ -41,7 +41,7 @@ class loginRules extends index
             "type.required"     =>"يجب ادخال نوع المستخدم",
             "type.in"           =>" users Or Providers يجب ان يكون النوع  ",
 
-            "phone.required_if" =>"يجب ادخال رقم التليفون او البريد الالكتروني",
+            "phone.required" =>"يجب ادخال رقم التليفون او البريد الالكتروني",
             "phone.numeric"     =>"يجب ادخال رقم التليفون بشكل صحيح",
             "phone.between"     =>"يجب ان لا يقل رقم التليفون عن 11 ارقام ولا يزيد عن 15 رقم ",
 

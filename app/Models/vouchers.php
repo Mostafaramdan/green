@@ -3,11 +3,11 @@ namespace App\Models;
 
 class vouchers extends GeneralModel
 {
-    protected $table = 'vouchers',$appends=["session","type"];
+    protected $table = 'vouchers';
 
     public static function createUpdate($params){
         $record= isset($params['id'])? self::find($params['id']) :new self();
-        $record->code =isset($params['code'])?$params['code']: $record->code;
+        $record->code =isset($params['id'])? $record->code : self::$helper::UniqueRandomXChar(6,'code',['vouchers']);
         $record->discountPercentage =isset($params['discountPercentage'])?$params['discountPercentage']: $record->discountPercentage;
         $record->maximumDeduction =isset($params['maximumDeduction'])?$params['maximumDeduction']: $record->maximumDeduction;
         $record->timeToUse =isset($params['timeToUse'])?$params['timeToUse']: $record->timeToUse;

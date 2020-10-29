@@ -1,12 +1,13 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use App\Http\Controllers\Apis\Controllers\index;
+
 class orders extends GeneralModel
 {
-    protected $table = 'orders',$appends=['status_ar','status_en'];
+    protected $table = 'orders',$appends=['status_ar','user_name','user_phone','mapLink'];
 
     public static function createUpdate($params){
 
@@ -16,6 +17,7 @@ class orders extends GeneralModel
         $record->totalPrice	 = isset($params["totalPrice"])? $params["totalPrice"]: $record->totalPrice;
         $record->paymentType	 = isset($params["paymentType"])? $params["paymentType"]: $record->paymentType;
         $record->deliveryPrice	 = isset($params["deliveryPrice"])? $params["deliveryPrice"]: $record->deliveryPrice;
+        $record->currency = isset($params["currency"])? $params["currency"]: $record->currency;
         $record->deliveryDate	 = isset($params["deliveryDate"])? $params["deliveryDate"]: $record->deliveryDate;
         $record->notes	 = isset($params["notes"])? $params["notes"]: $record->notes;
         $record->locations_id	 = isset($params["locations_id"])? $params["locations_id"]: $record->locations_id;
@@ -40,4 +42,22 @@ class orders extends GeneralModel
     public function carts(){
         return $this->hasMany(carts::class,'orders_id');
     }
+    function GetStatusArAttribute(){
+        index::$lang= 'ar';
+        return self::$helper::translateStatus($this->status);
+    }
+    function GetUserNameAttribute(){
+        return $this->user->name;
+    }
+    function GetUserPhoneAttribute(){
+        
+        return $this->user->phone;
+    }
+    function GetMapLinkAttribute()
+    {
+        $longitude= $this->location->longitude??"0";
+        $latitude= $this->location->latitude??"0";
+        return "https://maps.google.com/?q=".$latitude.",".$longitude;
+    }
+
 }

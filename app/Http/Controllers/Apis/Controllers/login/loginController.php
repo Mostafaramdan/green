@@ -14,28 +14,36 @@ class loginController extends index
 {
     public static function api()
     {
-        if(self::$request->apiToken){
-            return [
-                'status'=>200,
-                'apiToken'=>self::$request->apiToken,
 
-            ];
+        $user = users::where('phone',self::$request->phone)->first();
+        if(!$user){
+            $user = users::where('api_token',self::$request->apiToken)->first();
         }
-        if(self::$account){
-            if(!self::$account->is_active){
+        if($user){
+            if(!$user->is_active){
                 return [
                     'status'=>407,
                 ];
             }else{
-                sessions::where(self::$account->getTable().'_id',self::$account->id)->delete();
+                sessions::where('users_id',$user->id)->delete();
+                $user = users::createUpdate([
+                    "id"=>$user->id,
+                    'fireBaseToken'=>self::$request->fireBaseToken,
+                    'device_id'=>$user->device_id,
+                    'regions_id'=>self::$request->cityId,
+                    'phone'=>self::$request->phone,
+                    'lang'=>self::$request->lang,
+                ]);
                 $session =  sessions::createUpdate([
-                self::$account->getTable().'_id'=>self::$account->id,
+                    'users_id'=>$user->id,
                     'tmp_token'=>helper::UniqueRandomXChar(69,'tmp_token',['sessions']),
                     'code'=>helper::RandomXDigits(4)
                 ]);   
+                helper::sendSms($user->phone, $session->code);
                 return [
                     'status'=>200,
-                    'tmpToken'=>$session->tmp_token
+                    'tmpToken'=>$session->tmp_token,
+                    "apiToken"=>$user->api_token
                 ];
             }
         }else{

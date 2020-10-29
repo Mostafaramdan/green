@@ -20,8 +20,8 @@ use App\Models\ModelName;
 
 class '.$fileName.'Controller extends index
 {
-    public static function api()
-    {
+    public static function api(){
+
         $records=  ModelName::allActive();
         $message="";
         return [

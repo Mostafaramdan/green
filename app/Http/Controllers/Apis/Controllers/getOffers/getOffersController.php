@@ -14,7 +14,7 @@ class getOffersController extends index
     {
         $records=  products::allActive()->where('discount','!=',null);
         if(self::$request->categoryId){
-            $records = $records->where('categories_id',self::$categoryId);
+            $records = $records->where('categories_id',self::$request->categoryId);
         }
         return [
             "status"=>$records->forPage(self::$request->page+1,self::$itemPerPage)->count()?200:204,

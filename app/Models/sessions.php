@@ -23,4 +23,7 @@ class sessions extends GeneralModel
     public function users(){
         return $this->belongsTo('\App\Models\users','users_id');
     }
+    function getModelAttribute(){
+        return 'users';
+    }
 }
